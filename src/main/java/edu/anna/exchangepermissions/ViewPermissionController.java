@@ -20,4 +20,13 @@ public class ViewPermissionController {
 
         return viewPermissionService.getPermission(exchangeId, accountId);
     }
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @PutMapping("/view-permission")
+    public void changePermission(@RequestParam String exchangeId,
+                                 @RequestParam String accountId,
+                                 @RequestParam ViewPermission viewPermission) {
+
+        viewPermissionService.changePermission(exchangeId, accountId, viewPermission);
+    }
 }

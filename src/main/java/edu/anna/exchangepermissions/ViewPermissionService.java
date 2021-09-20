@@ -8,4 +8,8 @@ public class ViewPermissionService {
     public ViewPermission getPermission(String exchangeId, String accountId) {
         return ViewPermission.OFF;
     }
+
+    public void changePermission(String exchangeId, String accountId, ViewPermission viewPermission) {
+
+    }
 }
