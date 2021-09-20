@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ViewPermissionService {
 
+    private ViewPermissionRepository viewPermissionRepository;
+
     public ViewPermission getPermission(String exchangeId, String accountId) {
         return ViewPermission.OFF;
     }
