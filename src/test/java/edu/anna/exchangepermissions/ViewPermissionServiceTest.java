@@ -39,4 +39,14 @@ class ViewPermissionServiceTest {
         assertThat(actualViewPermission, equalTo(ViewPermission.OFF));
     }
 
+    @Test
+    void shouldChangePermissionCorrectly() {
+        UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
+        UserPermission userPermission = new UserPermission(userPermissionId, ViewPermission.L1);
+
+        service.changePermission(EXCHANGE_ID, ACCOUNT_ID, ViewPermission.L1);
+
+        verify(repository).save(userPermission);
+    }
+
 }

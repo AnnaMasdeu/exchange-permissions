@@ -16,6 +16,10 @@ public class UserPermission {
         this.viewPermission = viewPermission;
     }
 
+    private UserPermission() {
+
+    }
+
     public UserPermissionId getUserPermissionId() {
         return userPermissionId;
     }

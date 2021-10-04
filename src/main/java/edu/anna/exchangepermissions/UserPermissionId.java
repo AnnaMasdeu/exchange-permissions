@@ -1,10 +1,11 @@
 package edu.anna.exchangepermissions;
 
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class UserPermissionId {
+public class UserPermissionId implements Serializable {
 
     private String accountId;
     private String exchangeId;

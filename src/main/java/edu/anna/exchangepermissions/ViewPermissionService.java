@@ -22,6 +22,9 @@ public class ViewPermissionService {
     }
 
     public void changePermission(String exchangeId, String accountId, ViewPermission viewPermission) {
+        UserPermissionId userPermissionId = new UserPermissionId(accountId, exchangeId);
+        UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
 
+        viewPermissionRepository.save(userPermission);
     }
 }
