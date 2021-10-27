@@ -8,9 +8,11 @@ import java.util.Optional;
 public class ViewPermissionService {
 
     private final ViewPermissionRepository viewPermissionRepository;
+    private final Wallet wallet;
 
-    public ViewPermissionService(ViewPermissionRepository viewPermissionRepository) {
+    public ViewPermissionService(ViewPermissionRepository viewPermissionRepository, Wallet wallet) {
         this.viewPermissionRepository = viewPermissionRepository;
+        this.wallet = wallet;
     }
 
     public ViewPermission getPermission(String exchangeId, String accountId) {
@@ -24,6 +26,8 @@ public class ViewPermissionService {
     public void changePermission(String exchangeId, String accountId, ViewPermission viewPermission) {
         UserPermissionId userPermissionId = new UserPermissionId(accountId, exchangeId);
         UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
+
+        Charge.permissionCharge(viewPermission).ifPresent(wallet::charge);
 
         viewPermissionRepository.save(userPermission);
     }
