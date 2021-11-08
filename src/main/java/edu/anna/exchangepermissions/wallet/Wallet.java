@@ -1,4 +1,4 @@
-package edu.anna.exchangepermissions;
+package edu.anna.exchangepermissions.wallet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

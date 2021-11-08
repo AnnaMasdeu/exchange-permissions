@@ -1,4 +1,6 @@
-package edu.anna.exchangepermissions;
+package edu.anna.exchangepermissions.wallet;
+
+import edu.anna.exchangepermissions.ViewPermission;
 
 import java.math.BigDecimal;
 import java.util.Objects;

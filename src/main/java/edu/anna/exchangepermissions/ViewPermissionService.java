@@ -1,5 +1,7 @@
 package edu.anna.exchangepermissions;
 
+import edu.anna.exchangepermissions.wallet.Charge;
+import edu.anna.exchangepermissions.wallet.Wallet;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
