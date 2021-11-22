@@ -12,7 +12,7 @@ public class Charge {
     private final String currency;
     private final String concept;
 
-    private Charge(BigDecimal amount, String currency, String concept) {
+    public Charge(BigDecimal amount, String currency, String concept) {
         this.amount = amount;
         this.currency = currency;
         this.concept = concept;
@@ -27,6 +27,10 @@ public class Charge {
             default:
                 return Optional.empty();
         }
+    }
+
+    public Charge minus(Charge charge) {
+        return new Charge(amount.subtract(charge.getAmount()), currency, concept);
     }
 
     public BigDecimal getAmount() {

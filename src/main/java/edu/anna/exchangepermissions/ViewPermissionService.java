@@ -25,12 +25,23 @@ public class ViewPermissionService {
                 .orElse(ViewPermission.OFF);
     }
 
-    public void changePermission(String exchangeId, String accountId, ViewPermission viewPermission) {
+    public void changePermission(String exchangeId, String accountId, ViewPermission newViewPermission) {
         UserPermissionId userPermissionId = new UserPermissionId(accountId, exchangeId);
-        UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
 
-        Charge.permissionCharge(viewPermission).ifPresent(wallet::charge);
+        Optional<UserPermission> currentUserPermission = viewPermissionRepository.findById(userPermissionId);
 
-        viewPermissionRepository.save(userPermission);
+        if (currentUserPermission.isPresent()) {
+            ViewPermission currentViewPermission = currentUserPermission.get().getViewPermission();
+            Optional<Charge> alreadyPaidCharge = Charge.permissionCharge(currentViewPermission);
+            Optional<Charge> totalViewPermissionValue = Charge.permissionCharge(newViewPermission);
+
+            Charge upgradeCharge = totalViewPermissionValue.get().minus(alreadyPaidCharge.get());
+            wallet.charge(upgradeCharge);
+        } else {
+            Charge.permissionCharge(newViewPermission).ifPresent(wallet::charge);
+        }
+
+        UserPermission newUserPermission = new UserPermission(userPermissionId, newViewPermission);
+        viewPermissionRepository.save(newUserPermission);
     }
 }

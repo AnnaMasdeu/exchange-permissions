@@ -4,6 +4,7 @@ import edu.anna.exchangepermissions.wallet.Charge;
 import edu.anna.exchangepermissions.wallet.Wallet;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -45,27 +46,36 @@ class ViewPermissionServiceTest {
 
     @Test
     void shouldChangePermissionCorrectlyToL1() {
-        shouldChangePermissionCorrectly(ViewPermission.L1);
+        shouldChangePermissionCorrectly(ViewPermission.L1, Charge.permissionCharge(ViewPermission.L1));
     }
 
     @Test
     void shouldChangePermissionCorrectlyToL2() {
-        shouldChangePermissionCorrectly(ViewPermission.L2);
+        shouldChangePermissionCorrectly(ViewPermission.L2, Charge.permissionCharge(ViewPermission.L2));
     }
 
     @Test
     void shouldChangePermissionCorrectlyToOFF() {
-        shouldChangePermissionCorrectly(ViewPermission.OFF);
+        shouldChangePermissionCorrectly(ViewPermission.OFF, Charge.permissionCharge(ViewPermission.OFF));
     }
 
-    private void shouldChangePermissionCorrectly(ViewPermission viewPermission) {
+    @Test
+    void shouldChangePermissionCorrectlyFromL1ToL2() {
+        UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
+        Charge upgrade = new Charge(new BigDecimal("5"), "EUR", "A concept");
+
+        when(repository.findById(userPermissionId)).thenReturn(Optional.of(new UserPermission(userPermissionId, ViewPermission.L1)));
+
+        shouldChangePermissionCorrectly(ViewPermission.L2, Optional.of(upgrade));
+    }
+
+    private void shouldChangePermissionCorrectly(ViewPermission viewPermission, Optional<Charge> expectedCharge) {
         UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
         UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
 
         service.changePermission(EXCHANGE_ID, ACCOUNT_ID, viewPermission);
 
-        Charge.permissionCharge(viewPermission)
-                .ifPresentOrElse(chargedInWallet(), noChargesHappened());
+        expectedCharge.ifPresentOrElse(chargedInWallet(), noChargesHappened());
 
         verify(repository).save(userPermission);
     }
