@@ -28,17 +28,16 @@ public class ViewPermissionService {
     public void changePermission(String exchangeId, String accountId, ViewPermission newViewPermission) {
         UserPermissionId userPermissionId = new UserPermissionId(accountId, exchangeId);
 
-        Optional<UserPermission> currentUserPermission = viewPermissionRepository.findById(userPermissionId);
+        ViewPermission currentViewPermission = viewPermissionRepository.findById(userPermissionId)
+                .map(UserPermission::getViewPermission)
+                .orElse(ViewPermission.OFF);
 
-        if (currentUserPermission.isPresent()) {
-            ViewPermission currentViewPermission = currentUserPermission.get().getViewPermission();
+        if (newViewPermission.isHigherPermission(currentViewPermission)) {
             Optional<Charge> alreadyPaidCharge = Charge.permissionCharge(currentViewPermission);
             Optional<Charge> totalViewPermissionValue = Charge.permissionCharge(newViewPermission);
 
             Charge upgradeCharge = totalViewPermissionValue.get().minus(alreadyPaidCharge.get());
             wallet.charge(upgradeCharge);
-        } else {
-            Charge.permissionCharge(newViewPermission).ifPresent(wallet::charge);
         }
 
         UserPermission newUserPermission = new UserPermission(userPermissionId, newViewPermission);

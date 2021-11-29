@@ -69,6 +69,15 @@ class ViewPermissionServiceTest {
         shouldChangePermissionCorrectly(ViewPermission.L2, Optional.of(upgrade));
     }
 
+    @Test
+    void shouldNotChargeFromL2ToL1() {
+        UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
+
+        when(repository.findById(userPermissionId)).thenReturn(Optional.of(new UserPermission(userPermissionId, ViewPermission.L2)));
+
+        shouldChangePermissionCorrectly(ViewPermission.L1, Optional.empty());
+    }
+
     private void shouldChangePermissionCorrectly(ViewPermission viewPermission, Optional<Charge> expectedCharge) {
         UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
         UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
