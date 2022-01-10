@@ -4,7 +4,10 @@ import edu.anna.exchangepermissions.wallet.Charge;
 import edu.anna.exchangepermissions.wallet.Wallet;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+
+import static edu.anna.exchangepermissions.ViewPermission.OFF;
 
 @Component
 public class ViewPermissionService {
@@ -22,7 +25,7 @@ public class ViewPermissionService {
 
         Optional<UserPermission> viewPermission = viewPermissionRepository.findById(userPermissionId);
         return viewPermission.map(UserPermission::getViewPermission)
-                .orElse(ViewPermission.OFF);
+                .orElse(OFF);
     }
 
     public void changePermission(String exchangeId, String accountId, ViewPermission newViewPermission) {
@@ -30,17 +33,21 @@ public class ViewPermissionService {
 
         ViewPermission currentViewPermission = viewPermissionRepository.findById(userPermissionId)
                 .map(UserPermission::getViewPermission)
-                .orElse(ViewPermission.OFF);
+                .orElse(OFF);
 
-        if (newViewPermission.isHigherPermission(currentViewPermission)) {
-            Optional<Charge> alreadyPaidCharge = Charge.permissionCharge(currentViewPermission);
-            Optional<Charge> totalViewPermissionValue = Charge.permissionCharge(newViewPermission);
+        Charge totalViewPermissionValue = getCharge(newViewPermission, currentViewPermission);
 
-            Charge upgradeCharge = totalViewPermissionValue.get().minus(alreadyPaidCharge.get());
-            wallet.charge(upgradeCharge);
-        }
-
+        wallet.charge(totalViewPermissionValue);
         UserPermission newUserPermission = new UserPermission(userPermissionId, newViewPermission);
         viewPermissionRepository.save(newUserPermission);
+    }
+
+    private Charge getCharge(ViewPermission newViewPermission, ViewPermission currentViewPermission) {
+        if (newViewPermission.isHigherPermission(currentViewPermission)) {
+            Charge totalViewPermissionValue = Charge.permissionCharge(newViewPermission);
+            Charge alreadyPaidCharge = Charge.permissionCharge(currentViewPermission);
+            return totalViewPermissionValue.minus(alreadyPaidCharge);
+        }
+        return new Charge(new BigDecimal("0"), "EUR", "A concept");
     }
 }

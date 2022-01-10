@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -66,35 +65,26 @@ class ViewPermissionServiceTest {
 
         when(repository.findById(userPermissionId)).thenReturn(Optional.of(new UserPermission(userPermissionId, ViewPermission.L1)));
 
-        shouldChangePermissionCorrectly(ViewPermission.L2, Optional.of(upgrade));
+        shouldChangePermissionCorrectly(ViewPermission.L2, upgrade);
     }
 
     @Test
     void shouldNotChargeFromL2ToL1() {
         UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
+        Charge noCharge = new Charge(new BigDecimal("0"), "EUR", "A concept");
 
         when(repository.findById(userPermissionId)).thenReturn(Optional.of(new UserPermission(userPermissionId, ViewPermission.L2)));
 
-        shouldChangePermissionCorrectly(ViewPermission.L1, Optional.empty());
+        shouldChangePermissionCorrectly(ViewPermission.L1, noCharge);
     }
 
-    private void shouldChangePermissionCorrectly(ViewPermission viewPermission, Optional<Charge> expectedCharge) {
+    private void shouldChangePermissionCorrectly(ViewPermission viewPermission, Charge expectedCharge) {
         UserPermissionId userPermissionId = new UserPermissionId(ACCOUNT_ID, EXCHANGE_ID);
         UserPermission userPermission = new UserPermission(userPermissionId, viewPermission);
 
         service.changePermission(EXCHANGE_ID, ACCOUNT_ID, viewPermission);
 
-        expectedCharge.ifPresentOrElse(chargedInWallet(), noChargesHappened());
-
+        verify(wallet).charge(expectedCharge);
         verify(repository).save(userPermission);
     }
-
-    private Runnable noChargesHappened() {
-        return () -> verifyNoInteractions(wallet);
-    }
-
-    private Consumer<Charge> chargedInWallet() {
-        return charge -> verify(wallet).charge(charge);
-    }
-
 }

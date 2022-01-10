@@ -4,7 +4,6 @@ import edu.anna.exchangepermissions.ViewPermission;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Charge {
 
@@ -18,18 +17,19 @@ public class Charge {
         this.concept = concept;
     }
 
-    public static Optional<Charge> permissionCharge(ViewPermission viewPermission) {
+    public static Charge permissionCharge(ViewPermission viewPermission) {
         switch(viewPermission) {
             case L1:
-                return Optional.of(new Charge(new BigDecimal("5"), "EUR", "A concept"));
+                return new Charge(new BigDecimal("5"), "EUR", "A concept");
             case L2:
-                return Optional.of(new Charge(new BigDecimal("10"), "EUR", "A concept"));
+                return new Charge(new BigDecimal("10"), "EUR", "A concept");
             default:
-                return Optional.empty();
+                return new Charge(new BigDecimal("0"), "EUR", "A concept");
         }
     }
 
     public Charge minus(Charge charge) {
+        // TODO: check if currencies match
         return new Charge(amount.subtract(charge.getAmount()), currency, concept);
     }
 
