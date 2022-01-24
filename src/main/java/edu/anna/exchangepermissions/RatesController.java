@@ -3,30 +3,22 @@ package edu.anna.exchangepermissions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/exchange-permissions")
 public class RatesController {
 
-    private ViewPermissionService viewPermissionService;
+    private RatesRepository ratesRepository;
 
-    public RatesController(ViewPermissionService viewPermissionService) {
-        this.viewPermissionService = viewPermissionService;
+    public RatesController(RatesRepository ratesRepository) {
+        this.ratesRepository = ratesRepository;
     }
 
     @ResponseStatus(value =  HttpStatus.OK)
-    @GetMapping("/view-permission")
-    public ViewPermission getPermission(@RequestParam String exchangeId,
-                                        @RequestParam String accountId) {
+    @GetMapping("/rates")
+    public Iterable<Rate> getPermission() {
 
-        return viewPermissionService.getPermission(exchangeId, accountId);
-    }
-
-    @ResponseStatus(value = HttpStatus.OK)
-    @PutMapping("/view-permission")
-    public void changePermission(@RequestParam String exchangeId,
-                                 @RequestParam String accountId,
-                                 @RequestParam ViewPermission viewPermission) {
-
-        viewPermissionService.changePermission(exchangeId, accountId, viewPermission);
+        return ratesRepository.findAll();
     }
 }
