@@ -1,21 +1,28 @@
 package edu.anna.exchangepermissions;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.math.BigDecimal;
 
 @Entity
 public class Rate {
 
-    @Id
-    private Integer id;
+    @EmbeddedId
+    private RateId rateId;
 
-    private String exchangeId;
+    private BigDecimal amount;
 
-    public Integer getId() {
-        return id;
+    private String currency;
+
+    public RateId getRateId() {
+        return rateId;
     }
 
-    public String getExchangeId() {
-        return exchangeId;
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 }

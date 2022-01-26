@@ -4,7 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RatesRepository extends CrudRepository<Rate, Integer> {
-
+public interface RatesRepository extends CrudRepository<Rate, RateId> {
 
 }
